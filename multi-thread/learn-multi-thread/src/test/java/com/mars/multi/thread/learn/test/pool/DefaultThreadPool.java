@@ -21,7 +21,7 @@ public class DefaultThreadPool<T extends Runnable> implements ThreadPool<T> {
     }
 
     public DefaultThreadPool(int num) {
-        workNum = num > MAX_WORKER_NUMER ? MAX_WORKER_NUMER : num < MIN_WORK_NUMBER ? MIN_WORK_NUMBER : num;
+        workNum = num > MAX_WORKER_NUMER ? MAX_WORKER_NUMER : Math.max(num, MIN_WORK_NUMBER);
         initializeWokers(workNum);
     }
 
@@ -31,7 +31,7 @@ public class DefaultThreadPool<T extends Runnable> implements ThreadPool<T> {
         if (null != job) {
             synchronized (jobs) {
                 jobs.addLast(job);
-                job.notify();
+                jobs.notify();
             }
         }
     }
@@ -61,7 +61,7 @@ public class DefaultThreadPool<T extends Runnable> implements ThreadPool<T> {
                 throw new IllegalArgumentException("beyond worknum");
             }
             int count = 0;
-            while (count < count) {
+            while (count < num) {
                 Worker worker = workers.get(count);
                 if (workers.remove(worker)) {
                     worker.shutdown();
@@ -103,8 +103,8 @@ public class DefaultThreadPool<T extends Runnable> implements ThreadPool<T> {
                             Thread.currentThread().interrupt();
                             return;
                         }
-                        job = jobs.removeFirst();
                     }
+                    job = jobs.removeFirst();
                     if (null != job) {
                         job.run();
                     }

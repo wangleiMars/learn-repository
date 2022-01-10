@@ -1,3 +1,7 @@
+```
+
+```
+
 ## 多线程 multi-thread
 
 ### learn-multi-thread：
@@ -26,14 +30,14 @@
 
    1. volatile 轻量级的synchronized，在多处理器开发中保证了共享变量的可见性，他不会引起线程上下文的切换和调度
    2. volatile转换成汇编代码，会多出lock指令，lock指令会引发两件事，将当前处理器缓存行写入内存。这个写入内存的操作会是其他cpu缓存此地址的数据变为无效
-2. Synchroized
+2. synchronized
 
-   1. Synchroized 在1.6之后减少了锁和释放锁带来的性能损耗，引入了偏量锁和轻量级锁，以及锁的存储结果和升级过程
+   1. synchronized 在1.6之后减少了锁和释放锁带来的性能损耗，引入了偏量锁和轻量级锁，以及锁的存储结果和升级过程
       1. Synchroized 三种形式：
          1. 普通方法，锁的是当前示例
          2. 静态同步方法，锁的是当前类的class对象
          3. 同步方法快，锁的是Synchroized括号里配置的对象
-   2. Synchroized 在jvm实现原理，jvm基于进入和退出Monitor对象实现方法同步和代码块同步
+   2. synchronized 在jvm实现原理，jvm基于进入和退出Monitor对象实现方法同步和代码块同步
    3. 锁的级别：无锁状态 -> 偏向锁状态 -> 轻量锁 -> 重量级锁 锁会随着竞争状态的升级而升级，锁可以升级但是不可以降级
    4. 偏量锁依赖对象头 当一个线程访问同步块并获取锁时，会在对象头和栈帧中的锁记录里存储锁偏向的线程ID，以后该线程在进入和退出同步块时不需要进行CAS操作来加锁和解锁，只需简单地测试一下对象头的Mark Word里是否存储着
       指向当前线程的偏向锁。如果测试成功，表示线程已经获得了锁。如果测试失败，则需要再测试一下Mark Word中偏向锁的标识是否设置成1（表示当前是偏向锁）：如果没有设置，则使用CAS竞争锁；如果设置了，则尝试使用CAS将对象
@@ -43,7 +47,6 @@
    5. 轻量级锁 当前线程的栈桢中创建用于存储锁记录的空间，并将对象头中的Mark Word复制到锁记录中，线程尝试使用CAS将对象头中的Mark Word替换为指向锁记录的指针。如果成功，当前线程获得锁，如果失败，表示其他线程竞争锁，
       当前线程便尝试使用自旋来获取锁。 轻量级解锁时，会使用原子的CAS操作将Displaced MarkWord替换回到对象头，如果成功，则 表示没有竞争发生。如果失败，表示当前锁存在竞争，锁就会膨胀成重量级锁
    6. 锁的优缺点
-
 
 | 锁       |                                  优点                                  |                                                 缺点 |                           适用场景 |
 | ---------- | :----------------------------------------------------------------------: | -----------------------------------------------------: | -----------------------------------: |
@@ -94,15 +97,13 @@
       把一个64位long/double型变量的写操作拆分为两个32位的写操作来执行，任意的读操作在JSR-133中都必须具有原子性（即任意读操作必须要在单个读事务中执行）。
    10. volatile 变量对单个值的读写做了同步操作，相当于增加同步锁
    11. volatile特性：
-
-   1. 可见性：对volatile变量的读，任意线程总能看到 volatile变量最后的写入
-   2. 原子性：对任意单个volatile变量的读/写具有原子性，但类似于volatile++这种复合操作不具有原子性。
-   12. 当写一个volatile变量时，JMM会把该线程对应的本地内存中的共享变量值刷新到主内存。
-   13. 当第二个操作是volatile写时，不管第一个操作是什么，都不能重排序。这个规则确保volatile写之前的操作不会被编译器重排序到volatile写之后。
+   12. 可见性：对volatile变量的读，任意线程总能看到 volatile变量最后的写入
+   13. 原子性：对任意单个volatile变量的读/写具有原子性，但类似于volatile++这种复合操作不具有原子性。
+   14. 当写一个volatile变量时，JMM会把该线程对应的本地内存中的共享变量值刷新到主内存。
+   15. 当第二个操作是volatile写时，不管第一个操作是什么，都不能重排序。这个规则确保volatile写之前的操作不会被编译器重排序到volatile写之后。
        当第一个操作是volatile读时，不管第二个操作是什么，都不能重排序。这个规则确保volatile读之后的操作不会被编译器重排序到volatile读之前。
        当第一个操作是volatile写，第二个操作是volatile读时，不能重排序。
-   14. 处理器的重排序规则
-
+   16. 处理器的重排序规则
 
 | 屏障类型            |          指令示例          |                                                                                                                                                                                                    说明 |
 | --------------------- | :--------------------------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
@@ -145,32 +146,30 @@
 10. 对于引用类型，写final域的重排序规则对编译器和处理器增加了如下约束：在构造函数内对一个final引用的对象的成员域的写入，与随后在构造函数外把这个被构造对象的引用赋值给一个引用变量，这两个操作之间不能重排序。
 11. JMM把happens-before要求禁止的重排序分为了下面两类。
 
-    1. 会改变程序执行结果的重排序。
-    2. 不会改变程序执行结果的重排序。
+   1. 会改变程序执行结果的重排序。
+   2. 不会改变程序执行结果的重排序。
 12. JMM对这两种不同性质的重排序，采取了不同的策略
 
-    1. 对于会改变程序执行结果的重排序，JMM要求编译器和处理器必须禁止这种重排序。
-    2. 对于不会改变程序执行结果的重排序，JMM对编译器和处理器不做要求（JMM允许这种重排序）。
+   1. 对于会改变程序执行结果的重排序，JMM要求编译器和处理器必须禁止这种重排序。
+   2. 对于不会改变程序执行结果的重排序，JMM对编译器和处理器不做要求（JMM允许这种重排序）。
 13. happens-before关系的定义
 
-    1. 如果一个操作happens-before另一个操作，那么第一个操作的执行结果将对第二个操作可见，而且第一个操作的执行顺序排在第二个操作之前。
-    2.
-
-    两个操作之间存在happens-before关系，并不意味着Java平台的具体实现必须要按照happens-before关系指定的顺序来执行。如果重排序之后的执行结果，与按happens-before关系来执行的结果一致，那么这种重排序并不非法（也就是说，JMM允许这种重排序）。
+   1. 如果一个操作happens-before另一个操作，那么第一个操作的执行结果将对第二个操作可见，而且第一个操作的执行顺序排在第二个操作之前。
+   2.
+   两个操作之间存在happens-before关系，并不意味着Java平台的具体实现必须要按照happens-before关系指定的顺序来执行。如果重排序之后的执行结果，与按happens-before关系来执行的结果一致，那么这种重排序并不非法（也就是说，JMM允许这种重排序）。
 14. happens-before和as-if-serial
 
-    1. as-if-serial语义保证单线程内程序的执行结果不被改变，happens-before关系保证正确同步的多线程程序的执行结果不被改变。
-    2.
-
-    as-if-serial语义给编写单线程程序的程序员创造了一个幻境：单线程程序是按程序的顺序来执行的。happens-before关系给编写正确同步的多线程程序的程序员创造了一个幻境：正确同步的多线程程序是按happens-before指定的顺序来执行的。
+   1. as-if-serial语义保证单线程内程序的执行结果不被改变，happens-before关系保证正确同步的多线程程序的执行结果不被改变。
+   2.
+   as-if-serial语义给编写单线程程序的程序员创造了一个幻境：单线程程序是按程序的顺序来执行的。happens-before关系给编写正确同步的多线程程序的程序员创造了一个幻境：正确同步的多线程程序是按happens-before指定的顺序来执行的。
 15. happens-before规则
 
-    1. 程序顺序规则：一个线程中的每个操作，happens-before于该线程中的任意后续操作。
-    2. 监视器锁规则：对一个锁的解锁，happens-before于随后对这个锁的加锁。
-    3. volatile变量规则：对一个volatile域的写，happens-before于任意后续对这个volatile域的读。
-    4. 传递性：如果A happens-before B，且B happens-beforeC，那么A happens-before C。
-    5. start()规则：如果线程A执行操作ThreadB.start()（启动线程B），那么A线程的ThreadB.start()操作happens-before于线程B中的任意操作。
-    6. join()规则：如果线程A执行操作ThreadB. join()并成功返回，那么线程B中的任意操作happens-before于线程A从ThreadB. join()操作成功返回。
+   1. 程序顺序规则：一个线程中的每个操作，happens-before于该线程中的任意后续操作。
+   2. 监视器锁规则：对一个锁的解锁，happens-before于随后对这个锁的加锁。
+   3. volatile变量规则：对一个volatile域的写，happens-before于任意后续对这个volatile域的读。
+   4. 传递性：如果A happens-before B，且B happens-beforeC，那么A happens-before C。
+   5. start()规则：如果线程A执行操作ThreadB.start()（启动线程B），那么A线程的ThreadB.start()操作happens-before于线程B中的任意操作。
+   6. join()规则：如果线程A执行操作ThreadB. join()并成功返回，那么线程B中的任意操作happens-before于线程A从ThreadB. join()操作成功返回。
 16. 基于volatile的解决方案 双重锁
 
     ```
@@ -225,13 +224,13 @@
 18. 在大多数时候，正常的初始化要优于延迟初始化。如果确实需要对实例字段使用线程安全的延迟初始化，请使用上面介绍的基于volatile的延迟初始化的方案；如果确实需要对静态字段使用线程安全的延迟初始化，请使用上面介绍的基于类初始化的方案。
 19. Java程序的内存可见性保证可以分为下列3类
 
-    1. 单线程程序。单线程程序不会出现内存可见性问题。编译器、runtime和处理器会共同确保单线程程序的执行结果与该程序在顺序一致性模型中的执行结果相同。
-    2. 正确同步的多线程程序。正确同步的多线程程序的执行将具有顺序一致性（程序的执行结果与该程序在顺序一致性内存模型中的执行结果相同）。这是JMM关注的重点，JMM通过限制编译器和处理器的重排序来为程序员提供内存可见性保证。
-    3. 未同步/未正确同步的多线程程序。JMM为它们提供了最小安全性保障：线程执行时读取到的值，要么是之前某个线程写入的值，要么是默认值（0、null、false）。
+   1. 单线程程序。单线程程序不会出现内存可见性问题。编译器、runtime和处理器会共同确保单线程程序的执行结果与该程序在顺序一致性模型中的执行结果相同。
+   2. 正确同步的多线程程序。正确同步的多线程程序的执行将具有顺序一致性（程序的执行结果与该程序在顺序一致性内存模型中的执行结果相同）。这是JMM关注的重点，JMM通过限制编译器和处理器的重排序来为程序员提供内存可见性保证。
+   3. 未同步/未正确同步的多线程程序。JMM为它们提供了最小安全性保障：线程执行时读取到的值，要么是之前某个线程写入的值，要么是默认值（0、null、false）。
 20. JSR-133对JDK 5之前的旧内存模型的修补主要有两个
 
-    1. 增强volatile的内存语义。旧内存模型允许volatile变量与普通变量重排序。JSR-133严格限制volatile变量与普通变量的重排序，使volatile的写-读和锁的释放-获取具有相同的内存语义。
-    2. 增强final的内存语义。在旧内存模型中，多次读取同一个final变量的值可能会不相同。为此，JSR-133为final增加了两个重排序规则。在保证final引用不会从构造函数内逸出的情况下，final具有了初始化安全性。
+   1. 增强volatile的内存语义。旧内存模型允许volatile变量与普通变量重排序。JSR-133严格限制volatile变量与普通变量的重排序，使volatile的写-读和锁的释放-获取具有相同的内存语义。
+   2. 增强final的内存语义。在旧内存模型中，多次读取同一个final变量的值可能会不相同。为此，JSR-133为final增加了两个重排序规则。在保证final引用不会从构造函数内逸出的情况下，final具有了初始化安全性。
 
 ##### 1.4 java并发编程基础1. 为什么要使用多线程
 
@@ -399,7 +398,6 @@ Constant pool:
 1. 锁用来控制多线程访问共享资源的一种方式。相比着Synchronized更开放化，能显式的获取和释放锁，可操作性更大，但是需要成对的出现，防止锁未释放
 2. lock接口提供的Synchronized不具备的主要特征
 
-
 | 特征               | 描述                                                 |
 | -------------------- | ------------------------------------------------------ |
 | 尝试非阻塞的获取锁 | 当前尝试获取锁，若此锁未被其他线程占有，则成功获取锁 |
@@ -407,7 +405,6 @@ Constant pool:
 | 超时获取锁         | 制定在截取时间内获取锁，若超过指定时间，则返回       |
 
 3. lock的api
-
 
 | 方法名称                                                      | 描述                                                                                |
 | --------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
@@ -536,27 +533,24 @@ Condition方法及描述
 | void awaitUninterruptibly()                                    | 当前线程进入等待状态直到被通知，对中断不敏感                                                                                                                                                                                                                                                                                      |
 | long awaitNanos(long nanosTimeOut) throws InterruptedException | 当前线程进入等待状态直到被通知，中断或者超时。返回值表示剩余时间，                                                                                                                                                                                                                                                                |
 | boolean awaitUntil(Date deadLine)throws InterruptedException   | 当前线程进入等待状态直到被通知，中断或者到某个时间，如果没有到指定时间就被通知，方法返回true，否则表示到了指定时间，方法返回false                                                                                                                                                                                                 |
-|                                                                | 唤醒一个等待在Condition上的线程，该线程从等待方法返回前必须获得与Condition相关的锁                                                                                                                                                                                                                                                |
-|                                                                | 唤醒所有等待在Condition上的线程，该线程从等待方法返回前必须获得与Condition相关的锁                                                                                                                                                                                                                                                |
+| void signal()                                                  | 唤醒一个等待在Condition上的线程，该线程从等待方法返回前必须获得与Condition相关的锁                                                                                                                                                                                                                                                |
+| void signalAll()                                               | 唤醒所有等待在Condition上的线程，该线程从等待方法返回前必须获得与Condition相关的锁                                                                                                                                                                                                                                                |
 
 ##### 1.6 java并发容器和框架
 
 ###### 1.6.1 concurrentHashMap
 
 1. concurrentHashMap
-   1. hashmap在并发put时会引起死循环，因为多线程会导致hashmap的Entry链表形成环形数据结构，一旦形成环形数据结构，Entry的next节点永远不为空，就会产生死循环获得Entry
+
+   1. HashMap在并发put时会引起死循环，因为多线程会导致HashMap的Entry链表形成环形数据结构，一旦形成环形数据结构，Entry的next节点永远不为空，就会产生死循环.
    2.
    效率低下的HashTable，HashTable采用synchronized来保证线程安全，线程竞争激烈时效率低下，如线程1使用put进行元素添加，线程2不但不能使用put方法添加元素，也不能使用get方法来获取元素，所以竞争越激烈效率越低。
    3.
    ConcurrentHashMap的锁分段技术可有效提升并发访问率HashTable容器在竞争激烈的并发环境下表现出效率低下的原因是所有访问HashTable的线程都必须竞争同一把锁，假如容器里有多把锁，每一把锁用于锁容器其中一部分数据，那么当多线程访问容器里不同数据段的数据时，线程间就不会存在锁竞争，从而可以有效提高并发访问效率，这就是ConcurrentHashMap所使用的锁分段技术。首先将数据分成一段一段地存储，然后给每一段数据配一把锁，当一个线程占用锁访问其中一个段数据的时候，其他段的数据也能被其他线程访问。
 2.
-
 ConcurrentHashMap结构：由Segment数组结构和HashEntry数组结构组成，Segment是一种可重入锁（ReentrantLock）在ConcurrentHashMap里扮演锁的角色；HashEntry则用于存储键值对数据。一个ConcurrentHashMap里包含一个Segment数组。Segment的结构和HashMap类似，是一种数组和链表结构。一个Segment里包含一个HashEntry数组，每个HashEntry是一个链表结构的元素，每个Segment守护着一个HashEntry数组里的元素，当对HashEntry数组的数据进行修改时，必须首先获得与它对应的Segment锁
-
 3.
-
 ConcurrentHashMap初始化方法是通过initialCapacity、loadFactor和concurrencyLevel等几个参数来初始化segment数组、段偏移量segmentShift、段掩码segmentMask和每个segment里的HashEntry数组来实现的。
-
 4. concurrencyLevel的最大值是65535，这意味着segments数组的长度最大为65536，对应的二进制是16位。
 5. ConcurrentHashMap 通过散列两次以达到，数据均匀的存放在桶中
 6. ConcurrentHashMap get 散列两次查找桶 segments，若定位失败则采用while循环方式查询,高效之处在于查找不需要加锁，除非读到空值才加锁
@@ -564,26 +558,314 @@ ConcurrentHashMap初始化方法是通过initialCapacity、loadFactor和concurre
 8. put 判断是否需要扩容，扩容创建原来容量两倍的的数组，然后将原数组的元素进行散列后插入新的数组中，为了高效扩容只对单个segments 扩容
 9. size 操作ConcurrentHashMap的做法是先尝试2次通过不锁住Segment的方式来统计各个Segment大小，如果统计的过程中，容器的count发生了变化，则再采用加锁的方式来统计所有Segment的大小
 
+   1. jdk1.8改进 <br/>
+      红黑树结构 <br/>
+      ![](./20200611221031409.png)
+
+      1. 数据结构：Node数组+链表/红黑树 Node数组使用来存放树或者链表的头结点，当一个链表中的数量到达一个数目时，会使查询速率降低，所以到达一定阈值时，会将一个链表转换为一个红黑二叉树，提高查询的速率。
+      2. 主要属性：
+
+         ```
+         外部类的基本属性
+         volatile Node<K,V>[] table;   // Node数组用于存放链表或者树的头结点
+         static final int TREEIFY_THRESHOLD = 8;   // 链表转红黑树的阈值 > 8 时
+         static final int UNTREEIFY_THRESHOLD = 6;  // 红黑树转链表的阈值  <= 6 时
+         static final int TREEBIN   = -2;    // 树根节点的hash值
+         static final float LOAD_FACTOR = 0.75f;// 负载因子
+         static final int DEFAULT_CAPACITY = 16;   // 默认大小为16
+         内部类
+         class Node<K,V> implements Map.Entry<K,V> {
+         int hash;
+         final K key;
+         volatile V val;
+         volatile Node<K,V> next;
+         }
+         jdk1.8中虽然不在使用分段锁，但是仍然有Segment这个类，但是没有实际作用
+
+         ```
+      3. 主要方法：
+
+         1. 构造方法：构造方法并没有直接new出来一个node数组，只是检查数值之后确定了容量大小。
+
+            ```
+             ConcurrentHashMap(int initialCapacity) {
+             if (initialCapacity < 0)   
+             throw new IllegalArgumentException();
+             // 如果传入的数值>= 最大容量的一半，就使用最大容量，否则使用
+             //1.5*initialCapacity +1 ，然后向上取最近的 2 的 n 次方数；
+             int cap = ((initialCapacity >= (MAXIMUM_CAPACITY >>> 1)) ?
+             MAXIMUM_CAPACITY :
+             tableSizeFor(initialCapacity + (initialCapacity >>> 1) + 1));
+             this.sizeCtl = cap;
+             }
+
+            ```
+         2. put方法：
+
+            1. 检查Key或者Value是否为null，
+            2. 得到Kye的hash值
+            3. 如果Node数组是空的，此时才初始化 initTable()，
+            4. 如果找的对应的下标的位置为空，直接new一个Node节点并放入， break；
+            5. 如果对应头结点不为空， 进入同步代码块 判断此头结点的hash值，是否大于零，大于零则说明是链表的头结点在链表中寻找， 如果有相同hash值并且key相同，就直接覆盖，返回旧值 结束
+               如果没有则就直接放置在链表的尾部 此头节点的Hash值小于零，则说明此节点是红黑二叉树的根节点 调用树的添加元素方法 判断当前数组是否要转变为红黑树
+
+               ```
+                    public V put(K key, V value) {
+                        return putVal(key, value, false);
+                    }
+                    final V putVal(K key, V value, boolean onlyIfAbsent) {
+                        if (key == null || value == null) throw new NullPointerException();
+                        int hash = spread(key.hashCode());// 得到 hash 值
+                        int binCount = 0;   // 用于记录相应链表的长度
+                        for (Node<K,V>[] tab = table;;) {
+                            Node<K,V> f; int n, i, fh;
+                            // 如果数组"空"，进行数组初始化
+                            if (tab == null || (n = tab.length) == 0)
+                                // 初始化数组
+                                tab = initTable();
+
+                            // 找该 hash 值对应的数组下标，得到第一个节点 f
+                            else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) {
+                                // 如果数组该位置为空，
+                                //    用一次 CAS 操作将新new出来的 Node节点放入数组i下标位置
+                                //          如果 CAS 失败，那就是有并发操作，进到下一个循环
+                                if (casTabAt(tab, i, null,
+                                             new Node<K,V>(hash, key, value, null)))
+                                    break;          // no lock when adding to empty bin
+                            }
+                            // hash 居然可以等于 MOVED，这个需要到后面才能看明白，不过从名字上也能猜到，肯定是因为在扩容
+                             else if ((fh = f.hash) == MOVED)
+                                // 帮助数据迁移
+                                tab = helpTransfer(tab, f);
+
+                            else { // 到这里就是说，f 是该位置的头结点，而且不为空
+
+                                V oldVal = null;
+                                // 获取链表头结点监视器对象
+                                synchronized (f) {
+                                    if (tabAt(tab, i) == f) {
+                                        if (fh >= 0) { // 头结点的 hash 值大于 0，说明是链表
+                                            // 用于累加，记录链表的长度
+                                            binCount = 1;
+                                            // 遍历链表
+                                            for (Node<K,V> e = f;; ++binCount) {
+                                                K ek;
+                                                // 如果发现了"相等"的 key，判断是否要进行值覆盖，然后也就可以 break 了
+                                                if (e.hash == hash &&
+                                                    ((ek = e.key) == key ||
+                                                     (ek != null && key.equals(ek)))) {
+                                                    oldVal = e.val;
+                                                    if (!onlyIfAbsent)
+                                                        e.val = value;
+                                                    break;
+                                                }
+                                                // 到了链表的最末端，将这个新值放到链表的最后面
+                                                Node<K,V> pred = e;
+                                                if ((e = e.next) == null) {
+                                                    pred.next = new Node<K,V>(hash, key,
+                                                                              value, null);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        else if (f instanceof TreeBin) { // 红黑树
+                                            Node<K,V> p;
+                                            binCount = 2;
+                                            // 调用红黑树的插值方法插入新节点
+                                            if ((p = ((TreeBin<K,V>)f).putTreeVal(hash, key,
+                                                                           value)) != null) {
+                                                oldVal = p.val;
+                                                if (!onlyIfAbsent)
+                                                    p.val = value;
+                                            }
+                                        }
+                                    }
+                                }
+                                // binCount != 0 说明上面在做链表操作
+                                if (binCount != 0) {
+                                    // 判断是否要将链表转换为红黑树，临界值： 8
+                                    if (binCount >= TREEIFY_THRESHOLD)
+                                        // 如果当前数组的长度小于 64，那么会进行数组扩容，而不是转换为红黑树
+                                        treeifyBin(tab, i);   // 如果超过64，会转成红黑树
+                                    if (oldVal != null)
+                                        return oldVal;
+                                    break;
+                                }
+                            }
+                        }
+                        // 
+                        addCount(1L, binCount);
+                        return null;
+                    }
+
+               ```
+            6. 什么时候会扩容？:
+
+               1. 如果新增节点之后，所在链表的元素个数达到了阈值
+                  8，则会调用treeifyBin方法把链表转换成红黑树，不过在结构转换之前，会对数组长度进行判断，实现如下：如果数组长度n小于阈值MIN_TREEIFY_CAPACITY，默认是64，则会调用tryPresize方法把数组长度扩大到原来的两倍，并触发transfer方法，重新调整节点的位置。
+               2. 调用put方法新增节点时，在结尾会调用addCount方法记录元素个数，并检查是否需要进行扩容，当数组元素个数达到阈值时，会触发transfer方法，重新调整节点的位置。
+                  扩容状态下其他线程对集合进行插入、修改、删除、合并、compute 等操作时遇到ForwardingNode节点会触发扩容 。 putAll
+                  批量插入或者插入节点后发现存在链表长度达到8个或以上，但数组长度为64以下时会触发扩容 。
+               3. 注意：桶上链表长度达到8个或者以上，并且数组长度为64以下时只会触发扩容而不会将链表转为红黑树 。
+         3. get 方法
+
+            1. 首先获取到Key的hash值， 然后找到对应的数组下标处的元素 如果次元素是我们要找的，直接返回， 如果次元素是null 返回null 如果Key的值< 0 ,说明是红黑树，
+            2. ```
+               public V get(Object key) {
+                       Node<K,V>[] tab; Node<K,V> e, p; int n, eh; K ek;
+                       int h = spread(key.hashCode());   //获得Hash值
+                       if ((tab = table) != null && (n = tab.length) > 0 &&
+                           (e = tabAt(tab, (n - 1) & h)) != null) {
+                           if ((eh = e.hash) == h) {  // 比较 此头结点e是否是我们需要的元素
+                               if ((ek = e.key) == key || (ek != null && key.equals(ek)))
+                                   return e.val;   // 如果是，就返回
+                           }
+                           else if (eh < 0)   // 如果小于零，说明此节点是红黑树 
+                               return (p = e.find(h, key)) != null ? p.val : null;
+                           while ((e = e.next) != null) {
+                               // 开始循环 查找
+                               if (e.hash == h &&
+                                   ((ek = e.key) == key || (ek != null && key.equals(ek))))
+                                   return e.val;
+                           }
+                       }
+                       return null;
+                   }
+
+               ```
+         4. 扩容：tryPresize（）
+
+            ```
+            private final void tryPresize(int size) {
+                    int c = (size >= (MAXIMUM_CAPACITY >>> 1)) ? MAXIMUM_CAPACITY :
+                        tableSizeFor(size + (size >>> 1) + 1);
+                    int sc;
+                    while ((sc = sizeCtl) >= 0) {
+                        Node<K,V>[] tab = table; int n;
+                        if (tab == null || (n = tab.length) == 0) {
+                            n = (sc > c) ? sc : c;
+                            if (U.compareAndSwapInt(this, SIZECTL, sc, -1)) {
+                                try {
+                                    if (table == tab) {
+                                        @SuppressWarnings("unchecked")
+                                        Node<K,V>[] nt = (Node<K,V>[])new Node<?,?>[n];
+                                        table = nt;
+                                        sc = n - (n >>> 2);
+                                    }
+                                } finally {
+                                    sizeCtl = sc;
+                                }
+                            }
+                        }
+                        else if (c <= sc || n >= MAXIMUM_CAPACITY)
+                            break;
+                        else if (tab == table) {
+                            int rs = resizeStamp(n);
+                            if (sc < 0) {
+                                Node<K,V>[] nt;
+                                if ((sc >>> RESIZE_STAMP_SHIFT) != rs || sc == rs + 1 ||
+                                    sc == rs + MAX_RESIZERS || (nt = nextTable) == null ||
+                                    transferIndex <= 0)
+                                    break;
+                                if (U.compareAndSwapInt(this, SIZECTL, sc, sc + 1))
+                                    transfer(tab, nt);
+                            }
+                            else if (U.compareAndSwapInt(this, SIZECTL, sc,
+                                                         (rs << RESIZE_STAMP_SHIFT) + 2))
+                                transfer(tab, null);
+                        }
+                    }
+                }
+
+            ```
+         5. 其他内部类结构：
+
+            1. Node： ConcurrentHashMap存储结构的基本单元，实现了Map.Entry接口，用于存储数据。它对value和next属性设置了volatile同步锁(与JDK7的Segment相同)
+               ，它不允许调用setValue方法直接改变Node的value域，它增加了find方法辅助map.get()方法。
+            2. TreeNode：
+               继承于Node，但是数据结构换成了二叉树结构，它是红黑树的数据的存储结构，用于红黑树中存储数据，当链表的节点数大于8时会转换成红黑树的结构，他就是通过TreeNode作为存储结构代替Node来转换成黑红树。
+            3. TreeBin： 从字面含义中可以理解为存储树形结构的容器，而树形结构就是指TreeNode，所以TreeBin就是封装TreeNode的容器，它提供转换黑红树的一些条件和锁的控制。
+            4. ForwardingNode： 一个用于连接两个table的节点类。它包含一个nextTable指针，用于指向下一张表。而且这个节点的key value next指针全部为null，它的hash值为-1.
+               这里面定义的find的方法是从nextTable里进行查询节点，而不是以自身为头节点进行查找。
+            5. Unsafe和CAS： 在ConcurrentHashMap中，随处可以看到U,
+               大量使用了U.compareAndSwapXXX的方法，这个方法是利用一个CAS算法实现无锁化的修改值的操作，他可以大大降低锁代理的性能消耗。这个算法的基本思想就是不断地去比较当前内存中的变量值与你指定的一个变量值是否相等，如果相等，则接受你指定的修改的值，否则拒绝你的操作。因为当前线程中的值已经不是最新的值，你的修改很可能会覆盖掉其他线程修改的结果。这一点与乐观锁，SVN的思想是比较类似的。
+         6. 通过什么保证线程安全 通过使用Synchroized关键字来同步代码块，而且只是在put方法中加锁，在get方法中没有加锁 在加锁时是使用头结点作为同步锁对象。，并且定义了三个原子操作方法
+
+            ```
+            / 获取tab数组的第i个node<br>   
+             @SuppressWarnings("unchecked")
+            static final <K,V> Node<K,V> tabAt(Node<K,V>[] tab, int i) {
+                return (Node<K,V>)U.getObjectVolatile(tab, ((long)i << ASHIFT) + ABASE);
+            }
+            // 利用CAS算法设置i位置上的node节点。csa（你叫私有空间的值和内存中的值是否相等），即这个操作有可能不成功。
+            static final <K,V> boolean casTabAt(Node<K,V>[] tab, int i,
+                                                Node<K,V> c, Node<K,V> v) {
+                return U.compareAndSwapObject(tab, ((long)i << ASHIFT) + ABASE, c, v);
+            }
+            // 利用volatile方法设置第i个节点的值，这个操作一定是成功的。
+            static final <K,V> void setTabAt(Node<K,V>[] tab, int i, Node<K,V> v) {
+                U.putObjectVolatile(tab, ((long)i << ASHIFT) + ABASE, v);
+            }
+
+            ```
+      4. 和 hashTable的保证线程安全的机制有何联系 Hashtable通过synchronized修饰方法 来保证线程安全 通过synchronized同步代码块和 CAS操作来实现线程安全 由此抛出的问题：
+         为什么要用synchronized，cas不是已经可以保证操作的线程安全吗？ 原因： CAS也是适用一些场合的，比如资源竞争小时，是非常适用的，不用进行内核态和用户态之间
+         的线程上下文切换，同时自旋概率也会大大减少，提升性能，但资源竞争激烈时（比如大量线 程对同一资源进行写和读操作）并不适用，自旋概率会大大增加，从而浪费CPU资源，降低性 能
+      5. 为什么超过冲突超过8才将链表转为红黑树而不直接用红黑树? 默认使用链表， 链表占用的内存更小 正常情况下，想要达到冲突为8的几率非常小，如果真的发生了转为红黑树可以保证极端情况下的效率
+10. 二叉排序树： 二叉排序树（Binary Sort Tree），又称二叉查找树（Binary Search Tree），亦称二叉搜索树。是数据结构中的一类。在一般情况下，查询效率比链表结构要高。
+
+   1. 定义：
+      1. 一棵空树，或者是具有下列性质的二叉树： （1）若左子树不空，则左子树上所有结点的值均小于它的根结点的值； （2）若右子树不空，则右子树上所有结点的值均大于它的根结点的值； （3）左、右子树也分别为二叉排序树；
+         （4）没有键值相等的结点。
+      2. 一棵空树，或者是具有下列性质的二叉树： （1）若左子树不空，则左子树上所有结点的值均小于它的根结点的值； （2）若右子树不空，则右子树上所有结点的值均大于或等于它的根结点的值； （3）左、右子树也分别为二叉排序树；
+      3. 一棵空树，或者是具有下列性质的二叉树： （1）若左子树不空，则左子树上所有结点的值均小于或等于它的根结点的值； （2）若右子树不空，则右子树上所有结点的值均大于它的根结点的值； （3）左、右子树也分别为二叉排序树；
+         【注】：以上的三种定义在不同的数据结构教材中均有不同的定义方式 但是都是正确的 在开发时需要根据不 同的需求进行选择
+   2. 查找 步骤：若根结点的关键字值等于查找的关键字，成功。 否则，若小于根结点的关键字值，递归查左子树。 若大于根结点的关键字值，递归查右子树。 若子树为空，查找不成功。 平均情况分析（在成功查找两种的情况下）： 在一般情况下，设
+      P（n，i）为它的左子树的结点个数为 i 时的平均查找长度。结点个数为 n = 6 且 i = 3; 则 P（n,i）= P（6, 3） = [ 1+ ( P(3) + 1) * 3 + ( P(2) + 1) * 2 ] /
+      6= [ 1+ ( 5/3 + 1) * 3 + ( 3/2 + 1) * 2 ] / 6 注意：这里 P(3)、P(2) 是具有 3 个结点、2 个结点的二叉分类树的平均查找长度。 在一般情况，P（i）为具有 i
+      个结点二叉分类树的平均查找长度。平均查找长度= 每个结点的深度的总和 / 总结点数
+11. 红黑树：
+
+   1. 定义： 红黑树是每个节点都带有颜色属性的二叉查找树，颜色为红色或黑色。在二叉查找树强制一般要求以外，对于任何有效的红黑树我们增加了如下的额外要求：
+      1. 节点是红色或黑色。
+      2. 根是黑色。
+      3. 所有叶子都是黑色（叶子是NIL节点）。
+      4. 每个红色节点必须有两个黑色的子节点。（从每个叶子到根的所有路径上不能有两个连续的红色节点。）
+      5. 从任一节点到其每个叶子的所有简单路径都包含相同数目的黑色节点。
+   2. 查找：
+      1. 从根结点开始查找，把根结点设置为当前结点；
+      2. 若当前结点为空，返回null；
+      3. 若当前结点不为空，用当前结点的key跟查找key作比较；
+      4. 若当前结点key等于查找key，那么该key就是查找目标，返回当前结点；
+      5. 若当前结点key大于查找key，把当前结点的左子结点设置为当前结点，重复步骤2；
+      6. 若当前结点key小于查找key，把当前结点的右子结点设置为当前结点，重复步骤2； 简单不代表它效率不好。正由于红黑树总保持黑色完美平衡，所以它的查找最坏时间复杂度为O(2lgN)
+         ，也即整颗树刚好红黑相隔的时候。能有这么好的查找效率得益于红黑树自平衡的特性，而这背后的付出，红黑树的插入操作功不可没
+   3. 插入： 插入操作包括两部分工作：一查找插入的位置；二插入后自平衡。查找插入的父结点很简单，跟查找操作区别不大：
+      1. 从根结点开始查找；
+      2. 若根结点为空，那么插入结点作为根结点，结束。
+      3. 若根结点不为空，那么把根结点作为当前结点；
+      4. 若当前结点为null，返回当前结点的父结点，结束。
+      5. 若当前结点key等于查找key，那么该key所在结点就是插入结点，更新结点的值，结束。
+      6. 若当前结点key大于查找key，把当前结点的左子结点设置为当前结点，重复步骤4；
+      7. 若当前结点key小于查找key，把当前结点的右子结点设置为当前结点，重复步骤4；
+         插入位置已经找到，把插入结点放到正确的位置就可以啦，但插入结点是应该是什么颜色呢？答案是红色。理由很简单，红色在父结点（如果存在）为黑色结点时，红黑树的黑色平衡没被破坏，不需要做自平衡操作。但如果插入结点是黑色，那么插入位置所在的子树黑色结点总是多1，必须做自平衡。<br/> ![](./2392382-fa2b78271263d2c8.png)
+
 ###### 1.6.2 ConcurrentLinkedQueue
 
 1.
-
 在并发编程中，有时候需要使用线程安全的队列。如果要实现一个线程安全的队列有两种方式：一种是使用阻塞算法，另一种是使用非阻塞算法。使用阻塞算法的队列可以用一个锁（入队和出队用同一把锁）或两个锁（入队和出队用不同的锁）等方式来实现。非阻塞的实现方式则可以使用循环CAS的方式来实现。
-
 2.
-
 ConcurrentLinkedQueue是一个基于链接节点的无界线程安全队列，它采用先进先出的规则对节点进行排序，当我们添加一个元素的时候，它会添加到队列的尾部；当我们获取一个元素时，它会返回队列头部的元素。它采用了“waitfree”算法（即CAS算法）来实现
-
 3.
-
 定位尾节点：tail节点并不总是尾节点，所以每次入队都必须先通过tail节点来找到尾节点。尾节点可能是tail节点，也可能是tail节点的next节点。代码中循环体中的第一个if就是判断tail是否有next节点，有则表示next节点可能是尾节点。获取tail节点的next节点需要注意的是p节点等于p的next节点的情况，只有一种可能就是p节点和p的next节点都等于空，表示这个队列刚初始化，正准备添加节点，所以需要返回head节点。
 
 ###### 1.6.3 阻塞队列
 
 java中阻塞队列有四种处理方式，java7中有7中阻塞队列
 
-1. 什么是阻塞队列 ：是一个支持两个附加操作的队列，这两个附加操作支持阻塞的插入和移除方法 1.1 支持阻塞的插入方法：当队列满时，队列会阻塞插入元素的线程，直到队列不满时 1.2
-   支持阻塞移除方法：队列为空时，获取元素的线程会等待队列变为非空
+1. 什么是阻塞队列 ：是一个支持两个附加操作的队列，这两个附加操作支持阻塞的插入和移除方法
+   1. 支持阻塞的插入方法：当队列满时，队列会阻塞插入元素的线程，直到队列不满时
+   2. 支持阻塞移除方法：队列为空时，获取元素的线程会等待队列变为非空
 2. 阻塞队列常用于生产者和消费者的场景
 3. 阻塞队列不可用时，这两个附加操作提供了4种处理方式：
 
@@ -593,16 +875,18 @@ java中阻塞队列有四种处理方式，java7中有7中阻塞队列
 | 移除方法      | remove(e) | poll()     | take()   | poll(time,unit)    |
 | 检查方法      | element() | peek()     | 不可用   | 不可用             |
 
-4. 7中阻塞队列： 4.1 ArrayBlockingQueue : 一个由数组结构组成的有界的阻塞队列，队列按照先进先出（FIFO）的原则对元素进行排序。不保证线程的公平访问队列 4.2 LinkedBlockingQueue:
-   一个由链表结构组成的有界阻塞队列，队列的默认和最大长度为Integer.MAX_VALUE。此队列按照先进先出的原则对元素进行排序。 4.3 PriorityBlockingQueue:
-   一个支持优先级排序的无界阻塞队列，默认元素采用自然排序，可以自定义实现compareTo()指定排序规则，不能保证同优先级元素的顺序。 4.4
+4. 7中阻塞队列：
+   1. ArrayBlockingQueue : 一个由数组结构组成的有界的阻塞队列，队列按照先进先出（FIFO）的原则对元素进行排序。不保证线程的公平访问队列
+   2. LinkedBlockingQueue: 一个由链表结构组成的有界阻塞队列，队列的默认和最大长度为Integer.MAX_VALUE。此队列按照先进先出的原则对元素进行排序。
+   3. PriorityBlockingQueue: 一个支持优先级排序的无界阻塞队列，默认元素采用自然排序，可以自定义实现compareTo()指定排序规则，不能保证同优先级元素的顺序。
+   4.
    DelayQueue：一个支持延迟获取元素的无界阻塞队列，队列使用PriorityQueue实现，队列元素必须实现Delayed接口，在创建元素时可以指定元素多久才能从队列中获取当前元素，只有延迟期满时才能从队列中提取元素。可以作为：缓存系统，定时调度系统
-   4.5 SynchronousQueue：一个不储存元素的阻塞队列，每一个put操作必须等待一个take操作，否则不能继续添加元素。支持公平访问，默认时非公平访问 4.6
-   LinkedTransferQueue：一个由链表结构组成的无界阻塞队列，相比其他阻塞队列多了tryTransfer和transfer方法，transfer方法如果当前有消费者正在等待接收元素（消费者使用take()
-   方法或带时间限制的poll()
-   方法时），transfer方法可以把生产者传入的元素立刻transfer（传输）给消费者。如果没有消费者在等待接收元素，transfer方法会将元素存放在队列的tail节点，并等到该元素被消费者消费了才返回。和transfer方法的区别是tryTransfer方法无论消费者是否接收，方法立即返回，而transfer方法是必须等到消费者消费了才返回。
-   4.7
-   LinkedBlockingQueue：一个由链表结构组成的双向阻塞队列，所谓双向队列指的是可以从队列的两端插入和移出元素。双向队列因为多了一个操作队列的入口，在多线程同时入队时，也就减少了一半的竞争。相比其他的阻塞队列，LinkedBlockingDeque多了addFirst、addLast、offerFirst、offerLast、peekFirst和peekLast等方法，以First单词结尾的方法，表示插入、获取（peek）或移除双端队列的第一个元素。以Last单词结尾的方法，表示插入、获取或移除双端队列的最后一个元素。另外，插入方法add等同于addLast，移除方法remove等效于removeFirst。但是take方法却等同于takeFirst，不知道是不是JDK的bug，使用时还是用带有First和Last后缀的方法更清楚。双向阻塞队列可以运用在“工作窃取”模式中。
+   5. SynchronousQueue：一个不储存元素的阻塞队列，每一个put操作必须等待一个take操作，否则不能继续添加元素。支持公平访问，默认时非公平访问
+   6. LinkedTransferQueue：一个由链表结构组成的无界阻塞队列，相比其他阻塞队列多了tryTransfer和transfer方法，transfer方法如果当前有消费者正在等待接收元素（消费者使用take()
+      方法或带时间限制的poll()
+      方法时），transfer方法可以把生产者传入的元素立刻transfer（传输）给消费者。如果没有消费者在等待接收元素，transfer方法会将元素存放在队列的tail节点，并等到该元素被消费者消费了才返回。和transfer方法的区别是tryTransfer方法无论消费者是否接收，方法立即返回，而transfer方法是必须等到消费者消费了才返回。
+   7.
+   LinkedBlockingDeque：一个由链表结构组成的双向阻塞队列，所谓双向队列指的是可以从队列的两端插入和移出元素。双向队列因为多了一个操作队列的入口，在多线程同时入队时，也就减少了一半的竞争。相比其他的阻塞队列，LinkedBlockingDeque多了addFirst、addLast、offerFirst、offerLast、peekFirst和peekLast等方法，以First单词结尾的方法，表示插入、获取（peek）或移除双端队列的第一个元素。以Last单词结尾的方法，表示插入、获取或移除双端队列的最后一个元素。另外，插入方法add等同于addLast，移除方法remove等效于removeFirst。但是take方法却等同于takeFirst，不知道是不是JDK的bug，使用时还是用带有First和Last后缀的方法更清楚。双向阻塞队列可以运用在“工作窃取”模式中。
 5. 阻塞队列的实现原理
    1. 通知模式实现，就是当生产者往满的队列里添加元素时会阻塞住生产者，当消费者消费了一个队列中的元素后，会通知生产者当前队列可用
 
@@ -625,9 +909,7 @@ Atomic包里一共提供了13个类，属于4种类型的原子更新方式，�
    getAndSet(int newValue)以原子方式设置newvalue，并返回旧值。
 3. 原子类更新数组类：AtomicIntergerArray，AtomicLongArray，AtomicReferenceAarray。会复制当前数组
 4.
-
 原子类更新引用类型：AtomicReference，AtomicReferenceFieldUpdater，AtomicMarkableRference（原子更新带有标记位的引用类型。可以原子更新一个布尔类型的标记位和引用类型。构造方法是AtomicMarkableReference（VinitialRef，booleaninitialMark）。）
-
 5. 原子更新字段类：AtomicIntegerFieldUpdater，AtomicLongFieldUpdater，AtomicStampedReference（解决cas循环中的aba问题）
 
 ##### 1.8 java中并发工具类
@@ -636,10 +918,12 @@ Atomic包里一共提供了13个类，属于4种类型的原子更新方式，�
 2. 同步屏障CyclicBarrier它要做的事情是，让一组线程到达一个屏障（也可以叫同步点）时被阻塞，直到最后一个线程到达屏障时，屏障才会开门，所有被屏障拦截的线程才会继续运行。
 3. CountDownLatch和CyclicBarrier区别：前者计数器只能使用一次，后者的计数器可以重置reset()，
 4. 控制并发线程数的Semaphore（信号量）用来控制同时访问特定资源的线程数量.
-5. Semaphore还提供一些其他方法，具体如下。·intavailablePermits()：返回此信号量中当前可用的许可证数。·intgetQueueLength()
-   ：返回正在等待获取许可证的线程数。·booleanhasQueuedThreads()
-   ：是否有线程正在等待获取许可证。·voidreducePermits（intreduction）：减少reduction个许可证，是个protected方法。·CollectiongetQueuedThreads()
-   ：返回所有等待获取许可证的线程集合，是个protected方法。
+5. Semaphore还提供一些其他方法，具体如下。
+   1. ·intavailablePermits()：返回此信号量中当前可用的许可证数。
+   2. ·intgetQueueLength()：返回正在等待获取许可证的线程数。
+   3. ·booleanhasQueuedThreads() ：是否有线程正在等待获取许可证。
+   4. ·voidreducePermits（intreduction）：减少reduction个许可证，是个protected方法。
+   5. ·CollectiongetQueuedThreads() ：返回所有等待获取许可证的线程集合，是个protected方法。
 6. 线程间交换数据的Exchanger 用于进行线程间的数据交换。它提供一个同步点，在这个同步点，两个线程可以交换彼此的数据。这两个线程通过exchange方法交换数据，如果第一个线程先执行exchange()
    方法，它会一直等待第二个线程也执行exchange方法，当两个线程都到达同步点时，这两个线程就可以交换数据，将本线程生产出来的数据传递给对方。
 
@@ -666,8 +950,8 @@ graph LR
    3. 如果无法将任务加入BlockingQueue（队列已满）则创建新的线程来处理任务（需要获取全局锁）
    4. 如果创建新线程将使当前运行的线程超出maxmunPoolSize，任务将被拒绝，并调用RejectedExecutionHandler.rejectedExecution()方法。
 3. 线程池的使用：new ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit,
-   BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler)
-   1. corePoolSize
+   BlockingQueue<Runnable> runableTaskQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler)
+   1. corePoolSize <br/>
       线程池的基本大小，当提交一个任务到线程池时，线程池会创建一个线程来执行任务，即使其他空闲的基本线程能够执行新任务也会创建线程，等到需要执行的任务数大于线程池基本大小时就不再创建。如果调用了线程池的prestartAllCoreThreads()
       方法，线程池会提前创建并启动所有基本线程。
    2. runableTaskQueue（任务队列）：用于保存等待执行任务的阻塞队列，可以选择以下几种阻塞队列
@@ -678,47 +962,54 @@ graph LR
       4. PriorityBlockingQueue：一个具有优先级的无限阻塞队列
    3. maximumPoolSize（线程最大数量）：线程池允许创建的最大线程数。如果队列满了，并且已创建的线程数小于最大线程数，则线程池会再创建新的线程执行任务。值得注意的是，如果使用了无界的任务队列这个参数就没什么效果。
    4. threadFactory 用于设置创建线程的工厂，可以通过线程工厂给每个创建出来的线程设置更有意义的名字。使用开源框架guava提供的ThreadFactoryBuilder可以快速给线程池里的线程设置有意义的名字
-   5. RejectedExecutionHandler (饱和策略)
+   5. RejectedExecutionHandler (饱和策略) <br/>
       ：当队列和线程池都满了，说明线程池处于饱和状态，那么必须采取一种策略处理提交的新任务。这个策略默认情况下是AbortPolicy，表示无法处理新任务时抛出异常。在JDK1.5中Java线程池框架提供了以下4种策略。
       1. AbortPolicy：直接抛异常
       2. CallerRunsPolicy：只用调用者所在线程来运行任务
       3. DiscardOldestPolicy：丢弃队列最近的一个任务，并执行当前任务
-      4. DiscardPolicy：不处理，丢弃掉
-      5. 可以根据应用场景需要来实现RejectedExecutionHandler接口自定义策略。如记录日志或持久化存储不能处理的任务
+      4. DiscardPolicy：不处理，丢弃掉 <br/>
+         可以根据应用场景需要来实现RejectedExecutionHandler接口自定义策略。如记录日志或持久化存储不能处理的任务
    6. keepAliveTime（线程活动保持时间）：线程池的工作线程空闲后，保持存活的时间。所以，如果任务很多，并且每个任务执行的时间比较短，可以调大时间，提高线程的利用率。
    7. TimeUnit（线程活动保持时间的单位）
 4.
-
 可以通过调用线程池的shutdown或shutdownNow方法来关闭线程池。它们的原理是遍历线程池中的工作线程，然后逐个调用线程的interrupt方法来中断线程，所以无法响应中断的任务可能永远无法终止。但是它们存在一定的区别，shutdownNow首先将线程池的状态设置成STOP，然后尝试停止所有的正在执行或暂停任务的线程，并返回等待执行任务的列表，而shutdown只是将线程池的状态设置成SHUTDOWN状态，然后中断所有没有正在执行任务的线程。
+5. 要想合理地配置线程池，就必须首先分析任务特性，可以从以下几个角度来分析。
+   1. ·任务的性质：CPU密集型任务、IO密集型任务和混合型任务。
+   2. ·任务的优先级：高、中和低。·任务的执行时间：长、中和短。
+   3. ·任务的依赖性：是否依赖其他系统资源，如数据库连接。性质不同的任务可以用不同规模的线程池分开处理。
+   4. CPU密集型任务应配置尽可能小的线程，如配置Ncpu+1个线程的线程池。由于IO密集型任务线程并不是一直在执行任务，则应配置尽可能多的线程，如2*
+      Ncpu。混合型的任务，如果可以拆分，将其拆分成一个CPU密集型任务和一个IO密集型任务，只要这两个任务执行的时间相差不是太大，那么分解后执行的吞吐量将高于串行执行的吞吐量。如果这两个任务执行时间相差太大，则没必要进行分解。可以通过Runtime.getRuntime()
+      .availableProcessors()
+      方法获得当前设备的CPU个数。优先级不同的任务可以使用优先级队列PriorityBlockingQueue来处理。它可以让优先级高的任务先执行。注意如果一直有优先级高的任务提交到队列里，那么优先级低的任务可能永远不能执行。执行时间不同的任务可以交给不同规模的线程池来处理，或者可以使用优先级队列，让执行时间短的任务先执行。依赖数据库连接池的任务，因为线程提交SQL后需要等待数据库返回结果，等待的时间越长，则CPU空闲时间就越长，那么线程数应该设置得越大，这样才能更好地利用CPU。
 
-5.
-
-要想合理地配置线程池，就必须首先分析任务特性，可以从以下几个角度来分析。·任务的性质：CPU密集型任务、IO密集型任务和混合型任务。·任务的优先级：高、中和低。·任务的执行时间：长、中和短。·任务的依赖性：是否依赖其他系统资源，如数据库连接。性质不同的任务可以用不同规模的线程池分开处理。CPU密集型任务应配置尽可能小的线程，如配置Ncpu+1个线程的线程池。由于IO密集型任务线程并不是一直在执行任务，则应配置尽可能多的线程，如2*
-Ncpu。混合型的任务，如果可以拆分，将其拆分成一个CPU密集型任务和一个IO密集型任务，只要这两个任务执行的时间相差不是太大，那么分解后执行的吞吐量将高于串行执行的吞吐量。如果这两个任务执行时间相差太大，则没必要进行分解。可以通过Runtime.getRuntime()
-.availableProcessors()方法获得当前设备的CPU个数。优先级不同的任务可以使用优先级队列PriorityBlockingQueue来处理。它可以让优先级高的任务先执行。注意
-如果一直有优先级高的任务提交到队列里，那么优先级低的任务可能永远不能执行。执行时间不同的任务可以交给不同规模的线程池来处理，或者可以使用优先级队列，让执行时间短的任务先执行。依赖数据库连接池的任务，因为线程提交SQL后需要等待数据库返回结果，等待的时间越长，则CPU空闲时间就越长，那么线程数应该设置得越大，这样才能更好地利用CPU。
-
-6.
-
-如果在系统中大量使用线程池，则有必要对线程池进行监控，方便在出现问题时，可以根据线程池的使用状况快速定位问题。可以通过线程池提供的参数进行监控，在监控线程池的时候可以使用以下属性。·taskCount：线程池需要执行的任务数量。·completedTaskCount：线程池在运行过程中已完成的任务数量，小于或等于taskCount。·largestPoolSize：线程池里曾经创建过的最大线程数量。通过这个数据可以知道线程池是否曾经满过。如该数值等于线程池的最大大小，则表示线程池曾经满过。·getPoolSize：线程池的线程数量。如果线程池不销毁的话，线程池里的线程不会自动销毁，所以这个大小只增不减。·getActiveCount：获取活动的线程数。通过扩展线程池进行监控。可以通过继承线程池来自定义线程池，重写线程池的beforeExecute、afterExecute和terminated方法，也可以在任务执行前、执行后和线程池关闭前执行一些代码来进行监控。例如，监控任务的平均执行时间、最大执行时间和最小执行时间等。这几个方法在线程池里是空方法。
+6. 如果在系统中大量使用线程池，则有必要对线程池进行监控，方便在出现问题时，可以根据线程池的使用状况快速定位问题。可以通过线程池提供的参数进行监控，在监控线程池的时候可以使用以下属性。
+   1. ·taskCount：线程池需要执行的任务数量。
+   2. ·completedTaskCount：线程池在运行过程中已完成的任务数量，小于或等于taskCount。
+   3. ·largestPoolSize：线程池里曾经创建过的最大线程数量。通过这个数据可以知道线程池是否曾经满过。如该数值等于线程池的最大大小，则表示线程池曾经满过。
+   4. ·getPoolSize：线程池的线程数量。如果线程池不销毁的话，线程池里的线程不会自动销毁，所以这个大小只增不减。
+   5. ·getActiveCount：获取活动的线程数。通过扩展线程池进行监控。可以通过继承线程池来自定义线程池，
+   6. 重写线程池的beforeExecute、afterExecute和terminated方法，也可以在任务执行前、执行后和线程池关闭前执行一些代码来进行监控。
+   7. 例如，监控任务的平均执行时间、最大执行时间和最小执行时间等。这几个方法在线程池里是空方法。
 
 ##### 2.0 Executor框架
 
 1. Executor框架成员：ThreadPoolExecutor，ScheduledThreadExecutor,Future接口，Runnable接口，Callbale接口和Executor
    1.
    ThreadPoolExecutor通常使用工厂类Executors来创建。Executors可以创建3种类型的ThreadPoolExecutor：SingleThreadExecutor、FixedThreadPool和CachedThreadPool。
-   1. FixedThreadPool 创建使用固定数量线程数，适用于为满足资源管理的需求，需要限制当前线程数量的应用场景，适用于负载较重的服务器
-   2. SingleThreadPool，创建单个线程，适用于需要保证顺序的执行个个任务，并且在任意时间点，不会有多个线程是活动的应用场景
-   3. CachedThreadPool无界的线程池，适用于执行很多短期异步的小程序，负载较轻的服务器
-   2. ScheduledThreadPool
+   2. FixedThreadPool 创建使用固定数量线程数，适用于为满足资源管理的需求，需要限制当前线程数量的应用场景，适用于负载较重的服务器
+   3. SingleThreadPool，创建单个线程，适用于需要保证顺序的执行个个任务，并且在任意时间点，不会有多个线程是活动的应用场景
+   4. CachedThreadPool无界的线程池，适用于执行很多短期异步的小程序，负载较轻的服务器
+   5. ScheduledThreadPool <br/>
       ScheduledThreadPoolExecutor通常使用工厂类Executors来创建。Executors可以创建2种类型的ScheduledThreadPoolExecutor，如下。·ScheduledThreadPoolExecutor。包含若干个线程的ScheduledThreadPoolExecutor。·SingleThreadScheduledExecutor。只包含一个线程的ScheduledThreadPoolExecutor。
       1. ScheduledThreadPoolExecutor适用于需要多个后台线程执行周期任务，同时为了满足资源管理的需求而需要限制后台线程的数量的应用场景。
       2. SingleThreadScheduledExecutor适用于需要单个后台线程执行周期任务，同时需要保证顺序地执行各个任务的应用场景。
-   3. Future接口
+   6. Future接口 <br/>
       接口和实现Future接口的FutureTask类用来表示异步计算的结果。当我们把Runnable接口或Callable接口的实现类提交（submit）给ThreadPoolExecutor或ScheduledThreadPoolExecutor时，ThreadPoolExecutor或ScheduledThreadPoolExecutor会向我们返回一个FutureTask对象
-   4.
+   7.
    Runnable接口和Callable接口的实现类，都可以被ThreadPoolExecutor或ScheduledThreadPoolExecutor执行。它们之间的区别是Runnable不会返回结果，而Callable可以返回结果。
-2.
-
-ScheduledFutureTask主要包含3个成员变量，如下。·long型成员变量time，表示这个任务将要被执行的具体时间。·long型成员变量sequenceNumber，表示这个任务被添加到ScheduledThreadPoolExecutor中的序号。·long型成员变量period，表示任务执行的间隔周期。DelayQueue封装了一个PriorityQueue，这个PriorityQueue会对队列中的ScheduledFutureTask进行排序。排序时，time小的排在前面（时间早的任务将被先执行）。如果两个ScheduledFutureTask的time相同，就比较sequenceNumber，sequenceNumber小的排在前面（也就是说，如果两个任务的执行时间相同，那么先提交的任务将被先执行）。
-
+2. ScheduledFutureTask主要包含3个成员变量，如下。
+   1. ·long型成员变量time，表示这个任务将要被执行的具体时间。
+   2. ·long型成员变量sequenceNumber，表示这个任务被添加到ScheduledThreadPoolExecutor中的序号。
+   3. ·long型成员变量period，表示任务执行的间隔周期。
+   4.
+   DelayQueue封装了一个PriorityQueue，这个PriorityQueue会对队列中的ScheduledFutureTask进行排序。排序时，time小的排在前面（时间早的任务将被先执行）。如果两个ScheduledFutureTask的time相同，就比较sequenceNumber，sequenceNumber小的排在前面（也就是说，如果两个任务的执行时间相同，那么先提交的任务将被先执行）。

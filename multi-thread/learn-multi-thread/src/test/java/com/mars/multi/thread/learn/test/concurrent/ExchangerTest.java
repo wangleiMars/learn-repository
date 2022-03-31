@@ -14,21 +14,42 @@ public class ExchangerTest {
             String a = "银行流水a";
             try {
                 String s = EXCHANGER.exchange(a);
-                System.out.println("s:" + s + "a:" + a);
+                System.out.println("1b:" + s + ",a:" + a);
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }
+            }System.out.println("结束");
         });
 
         executorService.execute(() -> {
             String b = "银行流水b";
             try {
                 String c = EXCHANGER.exchange(b);
-                System.out.println("b:" + b + ",c:" + c);
+                System.out.println("2b:" + b + ",b:" + c);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }System.out.println("结束");
+        });
+
+        executorService.execute(() -> {
+            String b = "银行流水c";
+            try {
+                String c = EXCHANGER.exchange(b);
+                System.out.println("3b:" + c + ",b:" + c);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            System.out.println("结束");
         });
-        executorService.shutdown();
+        executorService.execute(() -> {
+            String b = "银行流水4";
+            try {
+                String c = EXCHANGER.exchange(b);
+                System.out.println("4b:" + c + ",b:" + c);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("结束");
+        });
+//        executorService.shutdown();
     }
 }
